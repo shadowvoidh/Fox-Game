@@ -1,0 +1,383 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0d0d0d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  touch-action: none;
+  user-select: none;
+}
+
+#wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  max-height: 844px;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #1e293b, #0f172a);
+  box-shadow: 0 0 80px rgba(255, 80, 0, 0.3);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* UI Header */
+#ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 18px 20px 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 10;
+}
+
+.score-box {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 8px 16px;
+  backdrop-filter: blur(6px);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.score-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+}
+
+.score-value {
+  font-family: 'Fredoka One', cursive;
+  font-size: 26px;
+  color: #fff;
+  line-height: 1;
+}
+
+.score-value span {
+  color: #ff8c42;
+}
+
+/* Dash Status Indicator */
+#dashIndicator {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: bold;
+  pointer-events: none;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  z-index: 10;
+  background: rgba(0,0,0,0.4);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.dash-ready {
+  color: #22d3ee !important;
+  border-color: #22d3ee !important;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Replay Tag */
+.replay-tag {
+  position: absolute;
+  top: 20px;
+  right: 70px;
+  background: #e11d48;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 12px;
+  display: none;
+  z-index: 20;
+  animation: blink 1s infinite;
+  box-shadow: 0 0 10px rgba(225, 29, 72, 0.6);
+}
+
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
+
+/* Radar Container */
+#radarContainer {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 55vh;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 2px;
+  z-index: 10;
+}
+
+.radar-icon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: bottom 0.1s linear;
+}
+
+#playerRadar {
+  width: 14px;
+  height: 14px;
+  background: #ff8c42;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ff8c42;
+  z-index: 2;
+}
+
+#lavaRadar {
+  width: 18px;
+  height: 6px;
+  background: #f97316;
+  border-radius: 3px;
+  box-shadow: 0 0 12px #f97316;
+  z-index: 1;
+}
+
+.goal-label {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #22d3ee;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* Touch Controls */
+#controls {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.ctrl-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  pointer-events: all;
+}
+
+.btn-ctrl {
+  width: 58px;
+  height: 58px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.1s, transform 0.1s;
+  backdrop-filter: blur(6px);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-ctrl:active, .btn-ctrl.pressed {
+  background: rgba(255, 140, 66, 0.4);
+  border-color: #ff8c42;
+  transform: scale(0.92);
+}
+
+#btn-dash {
+  width: 58px;
+  height: 58px;
+  background: rgba(34, 211, 238, 0.2);
+  border-color: #22d3ee;
+  font-size: 24px;
+}
+
+#btn-jump {
+  width: 68px;
+  height: 68px;
+  background: rgba(255, 140, 66, 0.25);
+  border-color: #ff8c42;
+  border-radius: 50%;
+  font-size: 28px;
+}
+
+/* Modals */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.modal-content {
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid #f97316;
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  color: white;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 0 40px rgba(249, 115, 22, 0.3);
+}
+
+.modal-content h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 38px;
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.modal-content p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+
+.modal-content .big-score {
+  font-family: 'Fredoka One', cursive;
+  font-size: 56px;
+  color: #ff8c42;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.modal-content .score-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.btn-play {
+  background: linear-gradient(135deg, #ff8c42, #ff3d00);
+  color: white;
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 40px;
+  cursor: pointer;
+  box-shadow: 0 6px 25px rgba(255, 80, 0, 0.5);
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 1px;
+  width: 100%;
+}
+
+.btn-play:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 30px rgba(255, 80, 0, 0.7);
+}
+
+.replay-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.btn-replay {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #38bdf8;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-replay:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+}
+
+.fox-icon {
+  font-size: 64px;
+  margin-bottom: 12px;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hidden {
+  display: none !important;
+}
+
+#startScreen h1 { color: #ff8c42; }
+#gameOverScreen h1 { color: #ff3d00; }
+#victoryScreen h1 { color: #22d3ee; }
+
+#gameOverScreen .fox-icon {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+.record-badge {
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  color: #000;
+  font-family: 'Fredoka One', cursive;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  display: inline-block;
+  letter-spacing: 1px;
+}

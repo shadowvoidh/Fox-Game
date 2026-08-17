@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Fox Blaze </title>
+  <link rel="icon" type="image/x-icon" href="srcimg/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <div id="wrapper">
+    <canvas id="c"></canvas>
+
+    <!-- UI Overlay -->
+    <div id="ui">
+      <div class="score-box">
+        <div class="score-label">Altura</div>
+        <div class="score-value"><span id="mEl">0</span>m</div>
+      </div>
+      <div class="score-box">
+        <div class="score-label">Recorde</div>
+        <div class="score-value" id="hsEl">0m</div>
+      </div>
+    </div>
+
+    <!-- Dash / Helper Indicator -->
+    <div id="dashIndicator">SHIFT: DASH PRONTO</div>
+
+    <!-- Replay Tag -->
+    <div class="replay-tag" id="replayIndicator">
+      REPLAY (<span id="replaySpeedLabel">1x</span>)
+    </div>
+
+    <!-- Radar -->
+    <div id="radarContainer">
+      <span class="goal-label">TOPO</span>
+      <div class="radar-icon" id="playerRadar" style="bottom: 0%;"></div>
+      <div class="radar-icon" id="lavaRadar" style="bottom: 0%;"></div>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div id="controls">
+      <div class="ctrl-group">
+        <div class="btn-ctrl" id="btn-left">◀</div>
+        <div class="btn-ctrl" id="btn-right">▶</div>
+      </div>
+      <div class="ctrl-group">
+        <div class="btn-ctrl" id="btn-dash">⚡</div>
+        <div class="btn-ctrl" id="btn-jump">🦊</div>
+      </div>
+    </div>
+
+    <!-- Start Screen Modal -->
+    <div class="modal-overlay" id="startScreen">
+      <div class="modal-content">
+        <div class="fox-icon">🦊</div>
+        <h1>Fox Blaze</h1>
+        <p>Escape da lava e suba o máximo possível!<br>Use pulo duplo, dash e desvie das bolas de fogo!</p>
+        <button class="btn-play" id="btnStart">JOGAR!</button>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal-overlay hidden" id="gameOverScreen">
+      <div class="modal-content">
+        <div class="fox-icon">💀</div>
+        <h1>Fim de Jogo!</h1>
+        <div class="big-score" id="goScore">0m</div>
+        <div class="score-sub">altura alcançada</div>
+        <div class="record-badge hidden" id="newRecord">⭐ NOVO RECORDE!</div>
+        
+        <div class="replay-buttons">
+          <button class="btn-replay" id="btnReplay1x">Replay 1x</button>
+          <button class="btn-replay" id="btnReplay2x">Replay 2x</button>
+        </div>
+
+        <button class="btn-play" id="btnRestart">TENTAR DE NOVO</button>
+      </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div class="modal-overlay hidden" id="victoryScreen">
+      <div class="modal-content">
+        <div class="fox-icon">🏆</div>
+        <h1>VITÓRIA!</h1>
+        <p>Você escapou da lava e chegou ao topo!</p>
+        <button class="btn-play" id="btnVictoryRestart">JOGAR NOVAMENTE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard/main.js"></script>
+</body>
+</html>
