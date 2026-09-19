@@ -1,3 +1,5 @@
+**[PT-BR ]** |   **[[ENG 🇺🇸 ]](README.en.md)**
+
 <div align="center">
 
   <h1>🦊 Fox Game</h1>
