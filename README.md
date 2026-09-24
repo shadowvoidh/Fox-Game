@@ -55,3 +55,13 @@
 ---
 
 
+## 🌘Autor
+* *Shadow_Voidh* - (https://github.com/shadowvoidh)
+
+## 📬 Contato
+* *GitHub:* [@shadowvoidh](https://github.com/shadowvoidh)
+* *Instagram:* [@shadow_voidh](https://www.instagram.com/shadow_voidh/)
+* *LinkedIn:* [Pedro Carnio](https://linkedin.com/in/pedrocarnio)
+* *Discord:* shadow_voidh
+* *E-mail:* shadow.voidh@gmail.com
+
