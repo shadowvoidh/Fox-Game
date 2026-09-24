@@ -381,3 +381,93 @@ canvas {
   display: inline-block;
   letter-spacing: 1px;
 }
+
+.btn.secondary {
+  background: #334155;
+  color: #fff;
+  border: 2px solid #475569;
+  margin-top: 10px;
+}
+
+.btn.secondary:hover {
+  background: #475569;
+}
+
+.shop-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e293b;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.btn.small {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+.btn.secondary {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 2px solid #334155;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn.secondary:hover {
+  background: #334155;
+  border-color: #475569;
+}
+
+/* Melhora o alinhamento e o estilo do modal da loja */
+#shopScreen .modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 320px;
+  width: 90%;
+}
+
+.shop-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.shop-item button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.shop-item button:active {
+  transform: scale(0.95);
+}

@@ -61,6 +61,8 @@
         <h1>Fox Blaze</h1>
         <p>Escape da lava e suba o máximo possível!<br>Use pulo duplo, dash e desvie das bolas de fogo!</p>
         <button class="btn-play" id="btnStart">JOGAR!</button>
+        <!-- Troque o botão da loja por este no index.html: -->
+        <button id="shopBtn" class="btn secondary">🛒 LOJA DE SKINS</button>
       </div>
     </div>
 
@@ -79,6 +81,8 @@
         </div>
 
         <button class="btn-play" id="btnRestart">TENTAR DE NOVO</button>
+        <!-- Troque o botão da loja por este no index.html: -->
+      <button id="shopBtn" class="btn secondary">🛒 LOJA DE SKINS</button>
       </div>
     </div>
 
@@ -93,6 +97,31 @@
     </div>
   </div>
 
+
+  <!-- Modal da Loja -->
+<div id="shopScreen" class="modal hidden">
+  <div class="modal-content">
+    <h2>🛒 Loja de Skins</h2>
+    <p>Seus Metros: <strong id="shopCoins">0m</strong></p>
+    
+    <div class="shop-grid">
+      <div class="shop-item">
+        <span>🦊 Raposa Clássica</span>
+        <button onclick="selectSkin('orange')" class="btn small">Usar</button>
+      </div>
+      <div class="shop-item">
+        <span>❄️ Raposa do Gelo</span>
+        <button id="btnSkinIce" onclick="buySkin('ice', 500)" class="btn small">500m</button>
+      </div>
+      <div class="shop-item">
+        <span>⚡ Raposa Negra</span>
+        <button id="btnSkinShadow" onclick="buySkin('shadow', 1000)" class="btn small">1000m</button>
+      </div>
+    </div>
+
+    <button id="closeShopBtn" class="btn primary" style="margin-top: 15px;">VOLTAR</button>
+  </div>
+</div>
   <script src="dashboard/main.js"></script>
 </body>
 </html>
