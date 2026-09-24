@@ -54,6 +54,4 @@
 
 ---
 
-## 🚀 Como Executar o Projeto
-Acesse👉
-https://shadowvoidh.github.io/Fox-Game/ 
+
