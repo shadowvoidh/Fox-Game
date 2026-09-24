@@ -1,7 +1,27 @@
-# 🦊 Fox Blaze
+# 🦊 Fox Blaze game
 
 **Fox Blaze** é um jogo de plataforma estilo *endless climber* (escalada infinita) feito com **HTML5 Canvas** e **JavaScript puro**. O objetivo é guiar a raposa plataforma acima, fugindo do avanço constante da lava, desviando de projéteis e alcançando o recorde máximo de altura!
 
+
+<div align="center">
+
+
+  <p>
+    <a href="https://shadowvoidh.github.io/Fox-Game/">
+      <img src="https://img.shields.io/badge/JOGAR_AGORA-FF6B00?style=for-the-badge&logo=firefox&logoColor=white" alt="Jogar Agora">
+    </a>
+  </p>
+
+  <br>
+
+  <!-- BADGES DE TECNOLOGIAS -->
+  <p>
+    <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
+    <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3">
+    <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
+  </p>
+
+</div>
 ---
 
 ## 🎮 Funcionalidades
