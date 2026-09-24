@@ -1,9 +1,10 @@
-**[PT-BR ]** |   **[[ENG 🇺🇸 ]](README.en.md)**
+# 🦊 Fox Blaze game
+
+**Fox Blaze** é um jogo de plataforma estilo *endless climber* (escalada infinita) feito com **HTML5 Canvas** e **JavaScript puro**. O objetivo é guiar a raposa plataforma acima, fugindo do avanço constante da lava, desviando de projéteis e alcançando o recorde máximo de altura!
+
 
 <div align="center">
 
-  <h1>🦊 Fox Game</h1>
-  <p>Jogo de plataforma 2D desenvolvido com HTML5, CSS3 e JavaScript puro.</p>
 
   <p>
     <a href="https://shadowvoidh.github.io/Fox-Game/">
@@ -21,39 +22,37 @@
   </p>
 
 </div>
+---
+
+## 🎮 Funcionalidades
+
+* **Física e Gameplay Balanceadas:** Mecânicas fluidas de movimentação, pulo duplo e *dash* com tempo de recarga (*cooldown*).
+* **Arte Vetorial Dinâmica:** Renderização via Canvas 2D com troca de expressões (pulo, direção e tela de morte).
+* **Sistema de Skins & Loja:** Desbloqueie e equipe visuais exclusivos (Raposa Clássica, Raposa do Gelo e Raposa Negra) usando sua pontuação máxima de metros.
+* **Persistência de Dados:** O recorde de altura e as skins desbloqueadas ficam salvos no seu navegador via `localStorage`.
+* **Interface Moderna:** Telas e modais interativos para Menu Inicial, Loja de Skins e Fim de Jogo.
+* **Suporte Multiplataforma:** Compatível com teclado e controles *touch* virtuais para telas sensíveis ao toque.
 
 ---
 
-### 📝 Sobre o Projeto
+## 🕹️ Como Jogar
 
-O **Fox Game** é um jogo arcade de plataforma 2D em estilo vertical rodando diretamente no navegador. O objetivo principal é guiar a raposa saltando pelas plataformas para subir o mais alto possível e fugir da lava subindo na parte inferior da tela.
-
----
-
-### ⚡ Funcionalidades
-
-* **Mecânica de Pulo & Dash:** Controles precisos para movimentação e habilidade especial de *Dash* (`SHIFT`).
-* **Inimigos & Perigos:** Aumento contínuo do nível de risco com a lava subindo.
-* **Sistema de Pontuação:** Marcador de altura atual e registro de **Recorde** máximo alcançado.
-* **Interface Responsiva:** Design vertical otimizado para navegadores e telas mobile com botões virtuais de controle.
+| Ação | Controles no Teclado | Controles Touch |
+| :--- | :--- | :--- |
+| **Mover** | Seta Esquerda / Direita ou `A` / `D` | Botões de seta |
+| **Pular / Pulo Duplo** | Espaço / Seta para Cima / `W` | Botão com ícone da Raposa |
+| **Dash** | `Shift` ou `K` | Botão com ícone do Raio ⚡ |
 
 ---
 
-### 🎮 Como Jogar
+## 🛠️ Tecnologias Utilizadas
 
-Você pode jogar  através do **GitHub Pages**:
-👉 **[Clique aqui para jogar o Fox Game](https://shadowvoidh.github.io/Fox-Game/)**
-
-#### Controles:
-* **Mover para Esquerda:** Seta para Esquerda (`←`) ou Tecla `A`
-* **Mover para Direita:** Seta para Direita (`→`) ou Tecla `D`
-* **Habilidade Dash:** Tecla `SHIFT`
-* **Dispositivos Móveis:** Utilize os botões virtuais na parte inferior da tela.
+* **HTML5:** Canvas para renderização gráfica e estrutura do DOM.
+* **CSS3:** Interfaces, modais responsivos e estilização de botões.
+* **JavaScript (ES6+):** Lógica de física, detecção de colisões, desenhos vetoriais e gerenciamento de estado.
 
 ---
 
-### 🛠️ Tecnologias Utilizadas
-
-* **HTML5:** Estruturação da aplicação e elementos gráficos de UI.
-* **CSS3:** Estilização moderna com gradientes, efeitos neon e layouts responsivos.
-* **JavaScript (Vanilla):** Lógica do jogo, física de saltos, detecção de colisão e manipulação de estado.
+## 🚀 Como Executar o Projeto
+Acesse👉
+https://shadowvoidh.github.io/Fox-Game/ 

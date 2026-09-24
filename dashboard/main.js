@@ -1,14 +1,13 @@
- const canvas = document.getElementById('c');
+const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const wrapper = document.getElementById('wrapper');
 
 let W, H;
+
 function resize() {
   W = canvas.width = wrapper.clientWidth;
   H = canvas.height = wrapper.clientHeight;
 }
-resize();
-window.addEventListener('resize', resize);
 
 // ── DOM Elements ──
 const mEl = document.getElementById('mEl');
@@ -66,322 +65,115 @@ const SFX = {
 
 // ── Config ──
 const CFG = {
-  gravity: 0.55,
-  jumpForce: -12.5,
-  moveSpeed: 4.8,
+  gravity: 0.38,      
+  jumpForce: -10,   
+  moveSpeed: 3.7,
   dashForce: 16,
-  dashDuration: 10,
-  dashCooldown: 60,
-  lavaSpeedBase: 0.85,
-  lavaSpeedMax: 4.8,
-  winHeight: 2000, // Altura em metros para vitória
+  dashDuration: 5,
+  dashCooldown: 360,
+  lavaSpeedBase: 0.43,
+  lavaSpeedMax: 3.6,
+  winHeight: 10000,
   platGap: 125,
-  ballInterval: 220,
+  ballInterval: 300,
 };
 
 // ── Game Variables ──
 let player, platforms, lava, balls, cameraY, meter, frame, ballTimer;
 
-// Drawing Fox Sprite
-function drawFox(x, y, w, h, facing, isJumping, isDead, isDashing) {
-  ctx.save();
-  ctx.translate(x + w/2, y + h/2);
-  if (facing < 0) ctx.scale(-1, 1);
-
-  // Tail
-  ctx.fillStyle = isDead ? '#777' : (isDashing ? '#22d3ee' : '#ff8c42');
-  ctx.beginPath();
-  ctx.ellipse(-w*0.55, h*0.1, w*0.32, h*0.22, Math.PI * 0.35, 0, Math.PI*2);
-  ctx.fill();
-
-  // Tail tip
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.ellipse(-w*0.68, h*0.05, w*0.15, h*0.11, Math.PI * 0.35, 0, Math.PI*2);
-  ctx.fill();
-
-  // Body
-  ctx.fillStyle = isDead ? '#666' : (isDashing ? '#0ea5e9' : '#ff6b2b');
-  ctx.beginPath();
-  ctx.ellipse(0, h*0.08, w*0.38, h*0.34, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // Belly
-  ctx.fillStyle = isDead ? '#888' : '#ffd4a8';
-  ctx.beginPath();
-  ctx.ellipse(w*0.06, h*0.14, w*0.22, h*0.22, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // Head
-  ctx.fillStyle = isDead ? '#666' : (isDashing ? '#0ea5e9' : '#ff6b2b');
-  ctx.beginPath();
-  ctx.ellipse(w*0.15, -h*0.2, w*0.3, h*0.28, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // Ears
-  ctx.fillStyle = isDead ? '#666' : (isDashing ? '#0ea5e9' : '#ff6b2b');
-  ctx.beginPath();
-  ctx.moveTo(w*0.02, -h*0.4);
-  ctx.lineTo(-w*0.08, -h*0.58);
-  ctx.lineTo(w*0.14, -h*0.44);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(w*0.2, -h*0.4);
-  ctx.lineTo(w*0.32, -h*0.58);
-  ctx.lineTo(w*0.28, -h*0.44);
-  ctx.closePath();
-  ctx.fill();
-
-  // Inner ears
-  ctx.fillStyle = isDead ? '#888' : '#ffb3a0';
-  ctx.beginPath();
-  ctx.moveTo(w*0.04, -h*0.42);
-  ctx.lineTo(-w*0.04, -h*0.52);
-  ctx.lineTo(w*0.12, -h*0.46);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(w*0.22, -h*0.42);
-  ctx.lineTo(w*0.30, -h*0.52);
-  ctx.lineTo(w*0.26, -h*0.46);
-  ctx.closePath();
-  ctx.fill();
-
-  // Face mask
-  ctx.fillStyle = isDead ? '#888' : '#ffd4a8';
-  ctx.beginPath();
-  ctx.ellipse(w*0.2, -h*0.16, w*0.18, h*0.18, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // Nose
-  ctx.fillStyle = '#330000';
-  ctx.beginPath();
-  ctx.ellipse(w*0.3, -h*0.1, w*0.05, h*0.035, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // Eyes
-  if (isDead) {
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
-    [[-h*0.26], [-h*0.24]].forEach(([ey], i) => {
-      const ex = i===0 ? w*0.07 : w*0.2;
-      ctx.beginPath();
-      ctx.moveTo(ex - 4, ey - 3); ctx.lineTo(ex + 4, ey + 3);
-      ctx.moveTo(ex + 4, ey - 3); ctx.lineTo(ex - 4, ey + 3);
-      ctx.stroke();
-    });
-  } else {
-    ctx.fillStyle = '#1a0000';
-    ctx.beginPath(); ctx.arc(w*0.07, -h*0.24, h*0.05, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(w*0.21, -h*0.25, h*0.05, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(w*0.09, -h*0.26, h*0.02, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(w*0.23, -h*0.27, h*0.02, 0, Math.PI*2); ctx.fill();
-  }
-
-  // Legs
-  const legH = isJumping ? h*0.08 : h*0.12;
-  ctx.fillStyle = isDead ? '#666' : (isDashing ? '#0ea5e9' : '#ff6b2b');
-  ctx.beginPath(); ctx.roundRect(-w*0.22, h*0.32, w*0.18, legH, 4); ctx.fill();
-  ctx.beginPath(); ctx.roundRect(w*0.04, h*0.32, w*0.18, legH, 4); ctx.fill();
-
-  ctx.restore();
-}
-
-function drawBall(b) {
-  ctx.save();
-  ctx.translate(b.x, b.y - cameraY);
-
-  const grd = ctx.createRadialGradient(0,0, b.r*0.2, 0,0, b.r*1.5);
-  grd.addColorStop(0, 'rgba(255,100,0,0.4)');
-  grd.addColorStop(1, 'rgba(255,0,0,0)');
-  ctx.fillStyle = grd;
-  ctx.beginPath(); ctx.arc(0,0, b.r*1.5, 0, Math.PI*2); ctx.fill();
-
-  const ballGrd = ctx.createRadialGradient(-b.r*0.3, -b.r*0.3, b.r*0.1, 0, 0, b.r);
-  ballGrd.addColorStop(0, '#ffdd44');
-  ballGrd.addColorStop(0.4, '#ff6600');
-  ballGrd.addColorStop(1, '#cc1100');
-  ctx.fillStyle = ballGrd;
-  ctx.beginPath(); ctx.arc(0, 0, b.r, 0, Math.PI*2); ctx.fill();
-
-  ctx.strokeStyle = 'rgba(255,200,0,0.6)';
-  ctx.lineWidth = 1.5;
-  for (let i=0; i<4; i++) {
-    ctx.save();
-    ctx.rotate(b.spin + i * Math.PI/2);
-    ctx.beginPath(); ctx.arc(0,0, b.r*0.6, 0, Math.PI*0.8);
-    ctx.stroke(); ctx.restore();
-  }
-  ctx.restore();
-}
-
-function drawPlatform(p) {
-  const py = p.y - cameraY;
-  if (py > H + 20 || py < -40) return;
-  ctx.save();
-
-  let color1, color2, glow;
-  if (p.type === 'static') {
-    color1 = '#475569'; color2 = '#1e293b'; glow = null;
-  } else if (p.type === 'move') {
-    color1 = '#0ea5e9'; color2 = '#0369a1'; glow = 'rgba(14,165,233,0.4)';
-  } else if (p.type === 'vertical') {
-    color1 = '#8b5cf6'; color2 = '#5b21b6'; glow = 'rgba(139,92,246,0.4)';
-  } else if (p.type === 'fade') {
-    ctx.globalAlpha = p.alpha;
-    color1 = '#ec4899'; color2 = '#be185d'; glow = 'rgba(236,72,153,0.4)';
-  }
-
-  if (glow) {
-    ctx.shadowColor = glow;
-    ctx.shadowBlur = 10;
-  }
-
-  const grad = ctx.createLinearGradient(p.x, py, p.x, py + p.h);
-  grad.addColorStop(0, color1);
-  grad.addColorStop(1, color2);
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.roundRect(p.x, py, p.w, p.h, 6);
-  ctx.fill();
-
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  ctx.beginPath();
-  ctx.roundRect(p.x + 4, py + 2, p.w - 8, 3, 2);
-  ctx.fill();
-
-  ctx.restore();
-}
-
-function drawLava() {
-  if (!lava) return;
-  const relY = lava.y - cameraY;
-
-  const gl = ctx.createLinearGradient(0, relY - 180, 0, relY);
-  gl.addColorStop(0, 'rgba(249, 115, 22, 0)');
-  gl.addColorStop(1, 'rgba(249, 115, 22, 0.5)');
-  ctx.fillStyle = gl;
-  ctx.fillRect(0, relY - 180, W, 180);
-
-  ctx.beginPath();
-  ctx.moveTo(0, relY);
-  for (let x = 0; x <= W; x += 10) {
-    ctx.lineTo(x, relY + Math.sin(x * 0.03 + lava.wave) * 10 + Math.cos(x * 0.02 + lava.wave*0.7) * 5);
-  }
-  ctx.lineTo(W, H + 100);
-  ctx.lineTo(0, H + 100);
-  ctx.closePath();
-
-  const lavGrad = ctx.createLinearGradient(0, relY, 0, relY + 300);
-  lavGrad.addColorStop(0, '#fb923c');
-  lavGrad.addColorStop(0.2, '#ea580c');
-  lavGrad.addColorStop(0.6, '#9a3412');
-  lavGrad.addColorStop(1, '#431407');
-  ctx.fillStyle = lavGrad;
-  ctx.fill();
-
-  lava.bubbles.forEach(b => {
-    const bRelY = b.y - cameraY;
-    if (bRelY > H || bRelY < relY - 30) return;
-    ctx.save();
-    ctx.globalAlpha = 0.6;
-    ctx.fillStyle = '#ffedd5';
-    ctx.beginPath();
-    ctx.arc(b.x, bRelY, b.r, 0, Math.PI*2);
-    ctx.fill();
-    ctx.restore();
-  });
-}
-
-function drawBG() {
-  const skyT = Math.min(1, (meter || 0) / CFG.winHeight);
-  const r1 = Math.round(30 - skyT*20), g1 = Math.round(41 - skyT*30), b1 = Math.round(59 + skyT*20);
-  const r2 = Math.round(15 - skyT*10), g2 = Math.round(23 - skyT*15), b2 = Math.round(42 - skyT*20);
-  const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-  skyGrad.addColorStop(0, `rgb(${r1},${g1},${b1})`);
-  skyGrad.addColorStop(1, `rgb(${r2},${g2},${b2})`);
-  ctx.fillStyle = skyGrad;
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  for (let i=0; i<35; i++) {
-    const sx = (i * 137.5 + 50) % W;
-    const sy = (i * 251.3 + 20) % H;
-    const ss = ((i * 0.7) % 1.5) + 0.5;
-    ctx.beginPath(); ctx.arc(sx, sy, ss, 0, Math.PI*2); ctx.fill();
-  }
-}
-
 function initGame() {
+  // 1. Recalcula a dimensão da tela no canvas
+  resize();
+
+  // 2. Trava posições iniciais fixas do jogador
   player = {
-    x: W/2 - 18, y: H - 120,
-    w: 36, h: 48,
-    vx: 0, vy: 0,
-    jumps: 0, maxJumps: 2,
+    x: W / 2 - 18,
+    y: H - 120,
+    w: 36,
+    h: 48,
+    vx: 0,
+    vy: 0,
+    jumps: 0,
+    maxJumps: 2,
     dashTimer: 0,
     dashCooldownTimer: 0,
     dashDir: 0,
     facing: 1,
     dead: false,
-    maxY: H - 120,
-    scaleX: 1, scaleY: 1,
+    maxY: H - 120, // Garante que a altura máxima comece cravada no ponto zero
+    scaleX: 1,
+    scaleY: 1,
     trail: [],
     targetPlatform: null,
     isAutoJumping: false,
   };
 
+  // 3. Define a câmera ANTES de gerar qualquer plataforma
+  cameraY = player.y - H * 0.45;
+
+  // 4. Gera o chão base e as plataformas superiores
   platforms = [];
-  platforms.push({ x: 0, y: H - 30, w: W, h: 30, type: 'static', alpha: 1, initialX: 0, initialY: H-30 });
-  for (let i = 1; i < 14; i++) {
+  platforms.push({
+    x: 0,
+    y: H - 30,
+    w: W,
+    h: 30,
+    type: 'static',
+    alpha: 1,
+    initialX: 0,
+    initialY: H - 30
+  });
+
+  for (let i = 1; i < 15; i++) {
     spawnPlatform(H - 30 - i * CFG.platGap);
   }
 
+  // 5. Oculta a lava abaixo do campo visível
   lava = {
-    y: H + 180,
+    y: H + 300,
     speed: CFG.lavaSpeedBase,
     wave: 0,
-    bubbles: Array.from({length:8}, (_,i) => ({
-      x: 40 + i * (W/8),
-      y: H + 200 + i*20,
-      r: 4 + Math.random()*6,
-      vy: -0.4 - Math.random()*0.3,
+    bubbles: Array.from({ length: 8 }, (_, i) => ({
+      x: 40 + i * (W / 8),
+      y: H + 320 + i * 20,
+      r: 4 + Math.random() * 6,
+      vy: -0.4 - Math.random() * 0.3,
     })),
   };
 
   balls = [];
   history = [];
-  cameraY = 0;
+
+  // 6. Zeramento estrito de placar e loops
   meter = 0;
+  mEl.textContent = '0';
   frame = 0;
   ballTimer = CFG.ballInterval;
-  mEl.textContent = '0';
 }
+window.addEventListener('load', () => {
+  resize();
+  initGame();
+  requestAnimationFrame(loop);
+});
 
+// Executa também um resize imediato
+resize();
 function spawnPlatform(y) {
-  const diff = Math.min(1, Math.max(0, meter / CFG.winHeight));
-  const minW = 85 - diff * 45;
-  const w = Math.max(35, minW + Math.random() * 45);
-  const x = Math.random() * (W - w);
+  // Garante que W seja válido
+  const canvasWidth = W || canvas.width || 400;
   
-  let type = 'static';
-  const r = Math.random();
-  if (r < 0.25 + diff * 0.25) type = 'move';
-  else if (r < 0.4 + diff * 0.2) type = 'vertical';
-  else if (r < 0.5 + diff * 0.2) type = 'fade';
+  const types = ['static', 'static', 'moving', 'crumble', 'spring'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const w = 70 + Math.random() * 40;
+  const x = Math.random() * (canvasWidth - w);
 
   platforms.push({
-    x, y, w, h: 14, type,
-    initialX: x,
-    initialY: y,
-    moveRange: 40 + Math.random()*70,
-    moveSpeed: 0.8 + diff*2,
-    time: Math.random()*100,
+    x, y, w, h: 14,
+    type,
+    vx: type === 'moving' ? (Math.random() > 0.5 ? 1.5 : -1.5) : 0,
     alpha: 1,
-    stepOn: false,
+    initialX: x,
+    initialY: y
   });
 }
 
@@ -568,6 +360,12 @@ function winGame() {
 
 function update() {
   if (state === 'replay') {
+    if (state === 'playing' && !player.dead) {
+  // Garante que o metro só suba quando o jogador subir além do ponto inicial
+  const currentHeight = Math.floor(( (H - 120) - player.y ) / 10);
+  meter = Math.max(0, currentHeight);
+  mEl.textContent = meter;
+}
     for (let i = 0; i < replaySpeed; i++) {
       if (replayFrame < history.length) {
         const f = history[replayFrame];
@@ -599,7 +397,8 @@ function update() {
     return;
   }
 
-  if (state !== 'playing' && !player?.dead) return;
+  if (state === 'start') return;
+  if (state !== 'playing' && !player?.dead) return; 
   if (!player || !lava || !platforms || !balls) return;
 
   frame++;
@@ -752,12 +551,68 @@ function update() {
   recordFrame();
 }
 
+function drawPlatform(p) {
+  const py = p.y - cameraY;
+  
+  // Oculta plataformas que estão fora da tela
+  if (py + p.h < -50 || py > H + 50) return;
+
+  ctx.save();
+  ctx.globalAlpha = p.alpha !== undefined ? p.alpha : 1;
+
+  // Cor base por tipo de plataforma
+  let color = '#475569'; // Estática
+  let accentColor = '#64748b';
+
+  if (p.type === 'moving') {
+    color = '#2563eb';
+    accentColor = '#60a5fa';
+  } else if (p.type === 'crumble') {
+    color = '#d97706';
+    accentColor = '#f59e0b';
+  } else if (p.type === 'spring') {
+    color = '#16a34a';
+    accentColor = '#4ade80';
+  }
+
+  // Corpo da plataforma
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(p.x, py, p.w, p.h, 6);
+  ctx.fill();
+
+  // Borda superior brilhante
+  ctx.fillStyle = accentColor;
+  ctx.beginPath();
+  ctx.roundRect(p.x, py, p.w, 4, [6, 6, 0, 0]);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+
+function drawBG() {
+  // Preenche o fundo com a cor do céu noturno
+  ctx.fillStyle = '#1b263b';
+  ctx.fillRect(0, 0, W, H);
+
+  // Desenha estrelas estáticas ao fundo
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  for (let i = 0; i < 30; i++) {
+    // Posições baseadas num padrão simples e fixo
+    let sx = (i * 137) % W;
+    let sy = ((i * 219) - cameraY * 0.2) % H;
+    if (sy < 0) sy += H;
+    ctx.fillRect(sx, sy, 2, 2);
+  }
+}
 function draw() {
+  // Limpa e desenha o fundo com as estrelas
   drawBG();
 
   if (!player || !platforms || !balls || !lava) return;
 
-  // Trail
+  // Rastro do jogador (Trail)
   player.trail.forEach(t => {
     ctx.save();
     ctx.globalAlpha = t.a * 0.5;
@@ -768,22 +623,247 @@ function draw() {
     ctx.restore();
   });
 
-  // Platforms
+  // Desenha as Plataformas
   platforms.forEach(drawPlatform);
 
-  // Balls
-  balls.forEach(drawBall);
+  // Desenha as Bolas de Fogo
+  if (typeof drawBall === 'function') {
+    balls.forEach(drawBall);
+  }
 
-  // Player
+  // Desenha o Jogador (Raposa)
+ if (typeof drawFox === 'function') {
   ctx.save();
   const py = player.y - cameraY;
   ctx.translate(player.x + player.w/2, py + player.h/2);
   ctx.scale(player.scaleX, player.scaleY);
   ctx.translate(-(player.x + player.w/2), -(py + player.h/2));
-  drawFox(player.x, py, player.w, player.h, player.facing, player.vy < -1, player.dead, player.dashTimer > 0);
+  
+  // 🔴 CORREÇÃO AQUI: Passamos (player.dashTimer > 0) em vez de uma variável solta 'isDashing'
+  drawFox(
+    player.x, 
+    py, 
+    player.w, 
+    player.h, 
+    player.facing, 
+    player.vy < -1, 
+    player.dead, 
+    player.dashTimer > 0
+  );
+  
   ctx.restore();
+}
 
-  drawLava();
+
+  
+  // Desenha a Lava
+  if (typeof drawLava === 'function') {
+    drawLava();
+  }
+}
+
+function drawBall(b) {
+  const py = b.y - cameraY;
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.arc(b.x, py, b.r || 10, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawLava() {
+  const ly = lava.y - cameraY;
+  ctx.fillStyle = '#f97316';
+  ctx.fillRect(0, ly, W, H + 500);
+}
+
+function drawFox(x, y, w, h, facing, isJumping, isDead, isDashing) {
+  ctx.save();
+  
+  // 1. Orientação (espelha na horizontal se olhar para a esquerda)
+  if (facing < 0) {
+    ctx.translate(x + w, y);
+    ctx.scale(-1, 1);
+  } else {
+    ctx.translate(x, y);
+  }
+
+  // 2. Sistema de Cores (Skins e Estados)
+  let mainColor = '#f97316'; // Raposa Clássica (Laranja)
+  
+  // Verifica qual skin está ativa
+  if (typeof currentSkin !== 'undefined') {
+    if (currentSkin === 'ice') mainColor = '#38bdf8';
+    if (currentSkin === 'shadow') mainColor = '#334155';
+  }
+
+  // Estados do jogador sobrescrevem a skin
+  if (isDashing) mainColor = '#06b6d4';
+  if (isDead) mainColor = '#64748b';
+
+  const innerEarColor = isDashing ? '#a5f3fc' : '#ffedd5';
+  const bellyColor = '#ffffff';
+
+  // 3. Desenho da Cauda
+  ctx.fillStyle = mainColor;
+  ctx.beginPath();
+  ctx.ellipse(-4, h * 0.7, 10, 6, Math.PI / 4, 0, Math.PI * 2);
+  ctx.fill();
+  
+  ctx.fillStyle = bellyColor;
+  ctx.beginPath();
+  ctx.ellipse(-8, h * 0.72, 4, 3, Math.PI / 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 4. Desenho das Orelhas
+  ctx.fillStyle = mainColor; // Orelha Esquerda
+  ctx.beginPath();
+  ctx.moveTo(w * 0.1, h * 0.35);
+  ctx.lineTo(w * 0.05, h * 0.02);
+  ctx.lineTo(w * 0.4, h * 0.2);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = innerEarColor;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.15, h * 0.3);
+  ctx.lineTo(w * 0.12, h * 0.08);
+  ctx.lineTo(w * 0.35, h * 0.22);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = mainColor; // Orelha Direita
+  ctx.beginPath();
+  ctx.moveTo(w * 0.6, h * 0.2);
+  ctx.lineTo(w * 0.95, h * 0.02);
+  ctx.lineTo(w * 0.9, h * 0.35);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = innerEarColor;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.65, h * 0.22);
+  ctx.lineTo(w * 0.88, h * 0.08);
+  ctx.lineTo(w * 0.85, h * 0.3);
+  ctx.closePath();
+  ctx.fill();
+
+  // 5. Corpo, Barriga e Patas
+  ctx.fillStyle = mainColor;
+  ctx.beginPath();
+  ctx.roundRect(w * 0.2, h * 0.45, w * 0.6, h * 0.5, 8);
+  ctx.fill();
+
+  ctx.fillStyle = bellyColor;
+  ctx.beginPath();
+  ctx.roundRect(w * 0.3, h * 0.5, w * 0.4, h * 0.38, 6);
+  ctx.fill();
+
+  ctx.fillStyle = '#1e293b'; // Patas
+  ctx.fillRect(w * 0.22, h * 0.88, w * 0.2, h * 0.12);
+  ctx.fillRect(w * 0.58, h * 0.88, w * 0.2, h * 0.12);
+
+  // 6. Cabeça e Bochechas
+  ctx.fillStyle = mainColor;
+  ctx.beginPath();
+  ctx.ellipse(w * 0.5, h * 0.38, w * 0.42, h * 0.22, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = bellyColor;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.08, h * 0.38);
+  ctx.lineTo(w * 0.5, h * 0.58);
+  ctx.lineTo(w * 0.92, h * 0.38);
+  ctx.closePath();
+  ctx.fill();
+
+  // 7. Olhos e Focinho
+  ctx.fillStyle = '#0f172a';
+  
+  if (isDead) {
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(w * 0.28, h * 0.32); ctx.lineTo(w * 0.38, h * 0.40);
+    ctx.moveTo(w * 0.38, h * 0.32); ctx.lineTo(w * 0.28, h * 0.40);
+    ctx.moveTo(w * 0.62, h * 0.32); ctx.lineTo(w * 0.72, h * 0.40);
+    ctx.moveTo(w * 0.72, h * 0.32); ctx.lineTo(w * 0.62, h * 0.40);
+    ctx.stroke();
+  } else {
+    const eyeY = isJumping ? h * 0.32 : h * 0.35;
+    ctx.beginPath();
+    ctx.arc(w * 0.32, eyeY, 3, 0, Math.PI * 2);
+    ctx.arc(w * 0.68, eyeY, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff'; // Brilho nos olhos
+    ctx.beginPath();
+    ctx.arc(w * 0.30, eyeY - 1, 1, 0, Math.PI * 2);
+    ctx.arc(w * 0.66, eyeY - 1, 1, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Nariz
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath();
+  ctx.arc(w * 0.5, h * 0.52, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// Variáveis de Skins
+let currentSkin = localStorage.getItem('foxSkin') || 'orange';
+let unlockedSkins = JSON.parse(localStorage.getItem('unlockedSkins') || '["orange"]');
+
+const shopBtn = document.getElementById('shopBtn');
+const shopScreen = document.getElementById('shopScreen');
+const closeShopBtn = document.getElementById('closeShopBtn');
+const shopCoins = document.getElementById('shopCoins');
+
+// Abrir e Fechar Loja
+shopBtn.addEventListener('click', () => {
+  shopCoins.textContent = highscore + 'm';
+  updateShopUI();
+  shopScreen.classList.remove('hidden');
+});
+
+closeShopBtn.addEventListener('click', () => {
+  shopScreen.classList.add('hidden');
+});
+
+// Comprar Skin
+function buySkin(skin, cost) {
+  if (unlockedSkins.includes(skin)) {
+    selectSkin(skin);
+    return;
+  }
+  if (highscore >= cost) {
+    unlockedSkins.push(skin);
+    localStorage.setItem('unlockedSkins', JSON.stringify(unlockedSkins));
+    selectSkin(skin);
+    updateShopUI();
+  } else {
+    alert('Você precisa de um recorde de altura maior!');
+  }
+}
+
+// Selecionar Skin
+function selectSkin(skin) {
+  if (unlockedSkins.includes(skin)) {
+    currentSkin = skin;
+    localStorage.setItem('foxSkin', skin);
+    updateShopUI();
+  }
+}
+
+function updateShopUI() {
+  ['ice', 'shadow'].forEach(skin => {
+    const btn = document.getElementById(`btnSkin${skin.charAt(0).toUpperCase() + skin.slice(1)}`);
+    if (unlockedSkins.includes(skin)) {
+      btn.textContent = currentSkin === skin ? 'Equipado' : 'Usar';
+      btn.style.background = currentSkin === skin ? '#22c55e' : '#3b82f6';
+    }
+  });
 }
 
 function loop() {
